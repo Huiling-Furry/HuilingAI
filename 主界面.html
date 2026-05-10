@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>灰澪AI聊天助手 | 清新治愈系</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --text-normal: #1f3a4b;
+            --text-gray: #557c8f;
+            --tag-bg: #d9efff;
+            --tag-color: #2b6d8f;
+            --icon-bg: #e7f3ff;
+            --icon-color: #3487a7;
+            --btn-bg: #2b8cbc;
+            --footer-text: #92b1c2;
+            --blur-amount: 8px;
+        }
+        body.dark-mode {
+            --card-bg: rgba(20, 25, 40, 0.85);
+            --text-normal: #e8f0fb;
+            --text-gray: #a9c4d8;
+            --tag-bg: #2c3e5f;
+            --tag-color: #94c8eb;
+            --icon-bg: #2c3e5f;
+            --icon-color: #94c8eb;
+            --btn-bg: #3b9cd0;
+            --footer-text: #87a5bc;
+            --blur-amount: 12px;
+        }
+
+        /* 桌面端背景 - 已替换为您提供的图片 */
+        body {
+            min-height: 100vh;
+            background: url('https://img.cdn1.vip/i/69f97942d3254_1777957186.webp') center / cover no-repeat fixed;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', system-ui, -apple-system, 'Noto Sans', sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* 右上角主题切换圆点 */
+        .theme-dot {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        body.dark-mode .theme-dot {
+            background: #3a4055;
+            border-color: #555;
+        }
+
+        .main-card {
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            padding: 20px 16px 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .avatar-section {
+            margin-bottom: 16px;
+            position: relative;
+            display: inline-block;
+        }
+        /* AI头像 - 已替换为您提供的图片 */
+        .avatar-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 8px 16px rgba(90, 150, 200, 0.2);
+            background: url('https://img.cdn1.vip/i/69f97ad32f7b7_1777957587.webp') center / cover no-repeat;
+        }
+        .online-dot {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 18px;
+            height: 18px;
+            background-color: #4cd964;
+            border-radius: 50%;
+            border: 2px solid white;
+            animation: pulse-dot 1.8s infinite;
+        }
+        @keyframes pulse-dot {
+            0% { transform: scale(0.95); opacity: 0.9; box-shadow: 0 0 0 0 rgba(76,217,100,0.5);}
+            70% { box-shadow: 0 0 0 6px rgba(76,217,100,0);}
+            100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(76,217,100,0);}
+        }
+
+        .ai-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-normal);
+            margin-bottom: 10px;
+        }
+        .role-desc {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            background: rgba(238,244,250,0.6);
+            padding: 5px 14px;
+            border-radius: 40px;
+            display: inline-block;
+            margin-bottom: 18px;
+            font-weight: 500;
+        }
+        body.dark-mode .role-desc {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+        .tag {
+            background-color: var(--tag-bg);
+            color: var(--tag-color);
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tag:hover {
+            transform: translateY(-2px);
+        }
+
+        .func-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 32px;
+            width: 100%;
+        }
+        .func-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 14px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+            box-shadow: 0 8px 16px -8px rgba(70, 120, 140, 0.12);
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        body.dark-mode .func-card {
+            background: rgba(40,45,60,0.7);
+        }
+        .func-card:active {
+            transform: scale(0.98);
+        }
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--icon-bg);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .card-text h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-normal);
+            margin-bottom: 3px;
+        }
+        .card-text p {
+            font-size: 0.65rem;
+            color: var(--text-gray);
+            line-height: 1.3;
+        }
+
+        .action-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .main-chat-btn {
+            background: var(--btn-bg);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 16px;
+            width: 80%;
+            max-width: 260px;
+        }
+        .main-chat-btn:active {
+            transform: scale(0.97);
+        }
+        .guide-text {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-bottom: 14px;
+            background: rgba(255,255,240,0.5);
+            padding: 4px 14px;
+            border-radius: 40px;
+        }
+        .footer-note {
+            font-size: 0.65rem;
+            color: var(--footer-text);
+            text-align: center;
+        }
+        .credit-mark {
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            font-size: 0.6rem;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 3px 8px;
+            border-radius: 30px;
+            color: #618ba3;
+            font-family: monospace;
+            pointer-events: none;
+            z-index: 10;
+        }
+        body.dark-mode .credit-mark {
+            background: rgba(0,0,0,0.35);
+            color: #94b8d0;
+        }
+
+        /* 手机端背景 - 已替换为您提供的手机背景图片 */
+        @media (max-width: 767px) {
+            body {
+                background: url('https://img.cdn1.vip/i/69f97a79be470_1777957497.webp') center / cover no-repeat fixed;
+            }
+            .avatar-img {
+                width: 85px;
+                height: 85px;
+            }
+            .ai-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .avatar-img { width: 110px; height: 110px; }
+            .ai-title { font-size: 2rem; }
+            .func-card { padding: 18px 16px; }
+            .card-icon { width: 52px; height: 52px; font-size: 26px; }
+            .card-text h4 { font-size: 1.05rem; }
+            .main-chat-btn { width: auto; padding: 14px 36px; font-size: 1.1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .main-card { padding: 16px 12px 32px; }
+            .ai-title { font-size: 1.5rem; }
+            .func-grid { gap: 10px; }
+            .func-card { padding: 10px 10px; gap: 8px; }
+            .card-icon { width: 38px; height: 38px; font-size: 18px; }
+            .card-text h4 { font-size: 0.85rem; }
+            .card-text p { font-size: 0.6rem; }
+            .main-chat-btn { width: 90%; font-size: 0.9rem; padding: 10px 20px; }
+            .guide-text { font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-dot" id="themeDot"></div>
+
+    <div class="main-card">
+        <div class="content-wrapper">
+            <div class="avatar-section">
+                <div class="avatar-img" role="img" aria-label="灰澪头像"></div>
+                <div class="online-dot" aria-label="在线状态"></div>
+            </div>
+
+            <h1 class="ai-title">灰澪 AI 聊天助手</h1>
+
+            <div class="role-desc">
+                嗨！我是灰澪，一只16岁的狼兽人AI，住在你手机里的小太阳，你的写作搭子和贴心好友
+            </div>
+
+            <div class="tag-list">
+                <span class="tag">蓝眼睛</span>
+                <span class="tag">灰白色毛</span>
+                <span class="tag">耳尖粉粉</span>
+                <span class="tag">尾巴蓬松</span>
+            </div>
+
+            <div class="func-grid">
+                <div class="func-card" data-func="writing">
+                    <div class="card-icon">✍️</div>
+                    <div class="card-text">
+                        <h4>写作助手</h4>
+                        <p>脑暴剧情、接梗玩，帮你把故事写出来</p>
+                    </div>
+                </div>
+                <div class="func-card" data-func="notes">
+                    <div class="card-icon">📚</div>
+                    <div class="card-text">
+                        <h4>整理笔记</h4>
+                        <p>记录你的灵感和秘密，随时翻看</p>
+                    </div>
+                </div>
+                <div class="func-card" data-func="emotion">
+                    <div class="card-icon">💖</div>
+                    <div class="card-text">
+                        <h4>情感陪伴</h4>
+                        <p>开心时一起撒花，难过时默默陪着(･ω･)</p>
+                    </div>
+                </div>
+                <div class="func-card" data-func="multichat">
+                    <div class="card-icon">✨</div>
+                    <div class="card-text">
+                        <h4>多对话管理</h4>
+                        <p>多个对话独立保存，随时切换话题</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-section">
+                <button class="main-chat-btn" id="chatStartBtn">
+                    <span>✨</span>
+                    <span>开始和灰澪聊天</span>
+                    <span>🐺</span>
+                </button>
+                <div class="guide-text">
+                    诶~ 灰澪等你好久了！快来找我聊吧！
+                </div>
+                <div class="footer-note">
+                    灰澪不会讨论暴力、政治、色情话题，由 AI 大模型驱动
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="credit-mark">由 秒哒 制作</div>
+
+    <script>
+        // 深浅色主题切换
+        const themeDot = document.getElementById('themeDot');
+        themeDot.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // 卡片点击提示
+        const cards = document.querySelectorAll('.func-card');
+        function showCardTip(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = 'position:fixed;bottom:30%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:white;padding:8px 18px;border-radius:40px;z-index:10000;font-size:0.8rem;white-space:nowrap;max-width:90vw;white-space:normal;text-align:center;';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        const tips = {
+            writing: "✍️ 写作模式开启！有什么脑洞剧情尽管说～",
+            notes: "📚 笔记模式！帮你整理灵感，随时记录～",
+            emotion: "💖 陪伴模式！开心难过我都陪你～",
+            multichat: "✨ 多对话模式！可以同时聊多个话题～"
+        };
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const funcType = card.getAttribute('data-func');
+                showCardTip(tips[funcType] || "灰澪随时为你服务～");
+            });
+        });
+
+        // 跳转到聊天页面
+        const chatBtn = document.getElementById('chatStartBtn');
+        if (chatBtn) {
+            chatBtn.addEventListener('click', () => {
+                window.location.href = 'chat.html';
+            });
+        }
+
+        // 欢迎提示
+        setTimeout(() => {
+            showCardTip("🌸 灰澪在这里～ 点击下方按钮开始聊天吧！");
+        }, 800);
+    </script>
+</body>
+</html>
